@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   Button,
+  ScrollView,
   FlatList,
   Pressable,
   Modal,
@@ -38,40 +39,44 @@ export default function App() {
 
   return (
     <View style={styles.appContainer}>
-      <Modal visible={show} animationType="slide">
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="input something"
-            onChangeText={addText}
-            value={enteredText}
-          />
-          <View style={styles.buttonContainer}>
-            <Button style="auto" title="add goal" onPress={addHandler} />
-            <Button
-              style="auto"
-              title="cancel"
-              onPress={() => setShow(false)}
-            />
-          </View>
+      {/* <Modal visible={show} animationType="slide" style={styles.modalContainer}> */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="input something here!!"
+          onChangeText={addText}
+          value={enteredText}
+        />
+        <View style={styles.buttonContainer}>
+          <Button style="auto" title="add goal" onPress={addHandler} />
+          <Button style="auto" title="cancel" onPress={() => setShow(false)} />
         </View>
-      </Modal>
-      <View style={styles.listContainer}>
-        {goalLists.map((goal) => {
-          return (
-            <View style={styles.item}>
-              <Pressable
-                android_ripple={{ color: "#dddddd" }}
-                style={({ pressed }) => pressed && styles.pressItem}
-                onPress={() => {
-                  onDeleteItem(goal.id);
-                }}
-              >
-                <Text key={goal.id}>{goal.text}</Text>
-              </Pressable>
-            </View>
-          );
-        })}
+      </View>
+      {/* </Modal> */}
+      <View style={styles.goalsContainer}>
+        <FlatList
+          data={goalLists}
+          renderItem={(itemData) => {
+            return (
+              <View style={styles.item}>
+                <Pressable
+                  // android_ripple只对安卓有用，ios需要下一行的style来给press后增加一些animation
+                  android_ripple={{ color: "#dddddd" }}
+                  style={({ pressed }) => pressed && styles.pressItem}
+                  onPress={() => {
+                    onDeleteItem(itemData.item.id);
+                  }}
+                >
+                  <Text style={styles.goalText}>{itemData.item.text}</Text>
+                </Pressable>
+              </View>
+            );
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+          alwaysBounceVertical={false}
+        ></FlatList>
       </View>
     </View>
   );
@@ -81,13 +86,14 @@ const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
   },
+  modalContainer: {
+    // backgroundColor: "#bcc5e6",
+  },
   inputContainer: {
     flex: 1,
-    // flexDirection: "row",
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    height: 60,
+    paddingTop: 50,
   },
   textInput: {
     borderColor: "#345beb",
@@ -95,25 +101,32 @@ const styles = StyleSheet.create({
     width: "70%",
     padding: 8,
   },
-  listContainer: {
-    flex: 1,
+  goalsContainer: {
+    flex: 3,
     padding: 100,
-    alignItems: "center",
   },
   item: {
     borderColor: "#345beb",
     borderWidth: 2,
-    borderRadius: 3,
+    borderRadius: 6,
     margin: 5,
-    padding: 5,
-    width: "80%",
+
+    width: "90%",
     backgroundColor: "#5edacc",
+    height: 70,
   },
   pressItem: {
     opacity: 0.5,
   },
   buttonContainer: {
+    width: "50%",
     flexDirection: "row",
     marginTop: 16,
+    justifyContent: "space-between",
+  },
+  goalText: {
+    color: "white",
+    fontSize: 40,
+    padding: 9,
   },
 });
